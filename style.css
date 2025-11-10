@@ -1,0 +1,16 @@
+*{
+    margin: 0;
+    padding: 0;
+    color: rgb(75, 126, 197);
+    box-sizing: border-box;
+}
+
+body{
+    background-color: black;
+}
+
+.main-heading{
+    text-align: center;
+    margin: 10px;
+    font-size: 60px;
+}
