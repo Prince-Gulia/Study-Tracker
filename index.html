@@ -24,6 +24,7 @@
                 <li class="elements">Number of Tasks for today</li>
                 <li class="elements">Completed Tasks</li>
                 <li class="elements">Remaining Tasks</li>
+                <li class="elements">Login/Logout</li>
             </ul>
 
 
@@ -33,12 +34,40 @@
         <section class="current-records">
             <!-- This Section is about the user's today's current details or track records in a simpler summarised way -->
 
+            <p class="number-of-tasks">Today's Number of Tasks : </p>
+            <p class="completed-tasks">Completed Tasks : </p>
+            <p class="yet-to-complete">Remaining Tasks : </p>
+            <p class="progress-for-today">Today's Progress</p>
+            <p class="book-read">Pages read : </p>
+
 
         </section>
 
 
         <section class="detailed-records-and-past-stats">
             <!-- This Section will be a scroll down section where the user can see the detailed track of his records and the stats of his previous completion and all -->
+
+
+            <form action="">
+
+                <label for="" class="Task-name">Add a Task's Name</label> <br>
+
+                <input type="text" name="task-to-add" id="task-to-add" class="task-to-add">
+
+                <p><label for="" class="description-for-the-task">Add the Description</label></p>
+
+                <textarea name="description-for-the-task" class="description-for-the-task" rows="5" cols="50" placeholder="Write the Description for the task"></textarea> <br>
+
+                <input type="checkbox" name="Study" id="option-1" value="Study">
+                <label for="Study">Study (Any Subject related)</label> <br>
+
+                <input type="checkbox" name="Skills" id="option-1" value="Skills">
+                <label for="Skills">Skills (You Want to develop)</label> <br>
+
+                <input type="checkbox" name="Book" id="option-1" value="Book">
+                <label for="Book">Book (Any Book for self reflection or Growth)</label> <br>
+
+            </form>
 
 
         </section>
@@ -59,4 +88,6 @@
 
     </div>
 </body>
+<script src="script.js"></script>
+
 </html>
