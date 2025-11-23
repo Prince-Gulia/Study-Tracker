@@ -1,93 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Tracker</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  </head>
+  <body>
+    <div class="container">
 
-    <h1 class="main-heading">Student Study Tracker</h1>
+      <!-- Nav Bar Section -->
 
-    <div class="main-area">
-        <!-- This Section is the Main area for our layout where we will create other sections for our record -->
+      <nav class="navbar">
+        <div class="whole-app-name">
+          <div class="logo">ST</div>
+          <div>
+            <div class="app-name">Study Tracker</div>
+            <div class="quote-line">Study. Track. Improve</div>
+          </div>
+        </div>
 
+        <div class="navbar-right-section">
+          <div class="user-card">
+            <div style="text-align: right; margin-right: 8px">
+              <div style="font-weight: 700">Prince</div>
+              <div style="font-size: 12px; color: var(--muted)">
+                BCA • 2nd Year
+              </div>
+            </div>
+            <div class="avatar">P</div>
+          </div>
+        </div>
+      </nav>
 
-        <nav class="user-info">
-            <!-- This Section will be the navbar for the user to login and activity and other navbar options -->
+      <!-- Main Section -->
 
-            <img id="user-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQudP1MDYkN_zh3qKPTPDKnFUWT48zmtrTldg&s" alt="Image can't be loaded">
+      <div class="grid">
 
-            <ul class="list">
-                <li class="elements" id="user-name"><a href="">Name</a></li>
-                <li class="elements">Number of Tasks for today</li>
-                <li class="elements">Completed Tasks</li>
-                <li class="elements">Remaining Tasks</li>
-                <li class="elements">Login/Logout</li>
-            </ul>
+        <!-- Left Section For the Task Addition and Quick Stats -->
 
+        <aside class="panel">
+          <div class="section-title"> Add / Quick Actions </div>
 
-        </nav>
+          <!-- Form Section (Adding the tasks) -->
+          <form id="task-form" class="task-form">
+            <div class="form-group">
+              <label for="task-type">Task Type</label>
+              <select id="task-type">
+                <option value="">Select type</option>
+                <option value="study">Study</option>
+                <option value="skill">Skill</option>
+                <option value="book">Book</option>
+              </select>
+            </div>
 
+            <div class="form-group">
+              <label for="detail-input" class="detail-label">Title / Subject</label>
+              <input type="text" id="detail-input" placeholder="eg. Calculus Chapter 4 / Deep Work / JavaScript Basics">
+            </div>
 
-        <section class="current-records">
-            <!-- This Section is about the user's today's current details or track records in a simpler summarised way -->
+            <div class="form-group">
+              <label for="resources">Resources (Links, Videos)</label>
+              <textarea placeholder="Add URLs, notes or short description..." id="resources"></textarea>
+            </div>
 
-            <p class="number-of-tasks">Today's Number of Tasks : </p>
-            <p class="completed-tasks">Completed Tasks : </p>
-            <p class="yet-to-complete">Remaining Tasks : </p>
-            <p class="progress-for-today">Today's Progress</p>
-            <p class="book-read">Pages read : </p>
+            <div class="form-row">
+              <div class="form-group" style="flex: 1">
+                <label for="amount">Hours / Pages</label>
+                <input type="number" placeholder="e.g., 2" id="amount">
+              </div>
+              <div class="form-group" style="width: 130px;">
+                <label for="due-date">Date</label>
+                <input type="date" id="due-date">
+              </div>
+            </div>
 
+            <button type="submit" class="add-task-btn">Submit</button>
+          </form>
 
-        </section>
+          <!-- Quick Stats Card -->
+           <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-number" id="total-tasks">0</div>
+              <div class="stat-label">Total Task</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="completed-task">0</div>
+              <div class="stat-label">Completed</div>
+            </div>
+           </div>
 
+        </aside>
 
-        <section class="detailed-records-and-past-stats">
-            <!-- This Section will be a scroll down section where the user can see the detailed track of his records and the stats of his previous completion and all -->
-
-
-            <form action="">
-
-                <label for="" class="Task-name">Add a Task's Name</label> <br>
-
-                <input type="text" name="task-to-add" id="task-to-add" class="task-to-add">
-
-                <p><label for="" class="description-for-the-task">Add the Description</label></p>
-
-                <textarea name="description-for-the-task" class="description-for-the-task" rows="5" cols="50" placeholder="Write the Description for the task"></textarea> <br>
-
-                <input type="checkbox" name="Study" id="option-1" value="Study">
-                <label for="Study">Study (Any Subject related)</label> <br>
-
-                <input type="checkbox" name="Skills" id="option-1" value="Skills">
-                <label for="Skills">Skills (You Want to develop)</label> <br>
-
-                <input type="checkbox" name="Book" id="option-1" value="Book">
-                <label for="Book">Book (Any Book for self reflection or Growth)</label> <br>
-
-            </form>
-
-
-        </section>
-
-
-        <article class="summary">
-            <!-- This will be the summary for the user about his performance or the activities he did and missed and completed and over all card type -->
-
-
-        </article>
-
-
-        <footer class="account-details">
-            <!-- This section is for the accounts details and log out part -->
-
-
-        </footer>
-
+      </div>
+      
     </div>
-</body>
-<script src="script.js"></script>
-
+  </body>
 </html>
