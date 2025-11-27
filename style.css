@@ -57,7 +57,7 @@ input:focus,
 textarea:focus,
 select:focus {
   border: 1px solid var(--accent);
-  background: white;
+  background: var(--card);
 }
 
 /* Neon button hover */
@@ -80,15 +80,8 @@ select:focus {
 
 /* Progress bar animation */
 .progress-fill {
-  animation: growBar 1.4s ease-out forwards;
-}
-@keyframes growBar {
-  from {
-    width: 0;
-  }
-  to {
-    width: 58%;
-  }
+  transition: width 0.8s ease-out;
+  width: 0; 
 }
 
 /* Hover glow on task type labels */
