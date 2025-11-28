@@ -14,6 +14,10 @@ const progressFill = document.getElementById("progress-fill")
 const leftSideTotalMeta = document.getElementById("total-tasks")
 const leftSideCompletedMeta = document.getElementById("completed-tasks")
 
+// Accessing the Task which we want to edit
+
+let editingTaskID = null
+
 
 // Loading Existing Files
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -36,21 +40,28 @@ function renderTasks() {
         return;
     }
 
+    const orderedMannerTasks = tasks.slice().sort((a,b) => {
+        return (a.status === "completed") - (b.status === "completed");
+    });
+
     // If there are Tasks exixts
-    tasks.forEach(task => {
+    orderedMannerTasks.forEach(task => {
+
+        const isCompleted = task.status === "completed";
+
         const taskHTML = `
-            <div class="task-item">
+            <div class="task-item ${isCompleted ? "completed" : ""}">
                 <div class="task-type type-${task.type}">
                     ${task.type.charAt(0).toUpperCase() + task.type.slice(1)}
                 </div>
                 
                 <div class="task-body">
-                    <div class="task-title">${task.title}</div>
+                    <div class="task-title ${isCompleted ? "title-completed" : ""}">${task.title}</div>
                     <div class="task-meta">${task.timeRequired} ${task.timeUnit} • Due : ${task.date}</div>
                 </div>
 
                 <div class="task-actions">
-                    <button class="btn-ghost" onclick="completeTask(${task.id})">Done</button>
+                    <button class="btn-ghost" ${isCompleted ? "disabled" : `onclick="completeTask(${task.id})"`}>${isCompleted ? "Completed" : "Done"}</button>
                     <button class="btn-ghost" onclick="editTask(${task.id})">Edit</button>
                 </div>
             </div>
@@ -79,7 +90,7 @@ function completeTask (taskID) {
     updateStats();
 }
 
-// Update stats function where all the stats will be updated afyter form submit or task completion
+// Update stats function where all the stats will be updated after form submit or task completion
 function updateStats () {
     const total = tasks.length;
     const completed = tasks.filter(t => t.status === "completed").length;
@@ -96,9 +107,57 @@ function updateStats () {
 
     effortScore.textContent = effortPercent + "%"; //Adding The effort at the right side of the bar
 
-    progressFill.style.width = effortPercent + "%"
+    progressFill.style.width = effortPercent + "%" //Updating the CSS for progress bar
 
 }
+
+// Function for Editing Task for editing task
+function editTask (taskID) {
+    editingTaskID = taskID;
+
+    // Accessing the task from the tasks to edit
+    const task = tasks.find( t => t.id === taskID) 
+
+    if(!task) return; 
+
+    // Accessing all the elements and providing their previous values for user to change
+
+    document.getElementById("edit-title").value = task.title ; 
+    document.getElementById("edit-resources").value = task.resources.join(", ");
+    document.getElementById("edit-time").value = task.timeRequired;
+    document.getElementById("edit-date").value = task.date;
+
+    // Making our pop up form appear and visible for our user
+
+    document.getElementById("edit-modal").style.display = "flex";
+
+    // Making it disapper if user enters cancel
+
+    document.getElementById("edit-cancel").addEventListener("click", () => {
+        document.getElementById("edit-modal").style.display = "none"; 
+    })
+
+}
+
+ // Making our changes saved as a new Task in our storage
+
+    document.getElementById("edit-save").addEventListener("click", () => {
+        const task = tasks.find(t => t.id === taskID)
+        if(!task) return ;
+
+        // Collecting the new data if task ID exists
+        task.title = document.getElementById("edit-title").value.trim();
+        task.resources = document.getElementById("edit-resources").value.split(",").map(r => r.trim());
+        task.timeRequired = parseInt(document.getElementById("edit-time").value);
+        task.date = document.getElementById("edit-date").value;
+
+        // Saving and rendering again to show the updated Task
+
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        renderTasks();
+
+        document.getElementById("edit-modal").style.display = "none"; // Making it Hidden again
+    })
 
 
 // Form Submit Handling

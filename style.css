@@ -78,6 +78,35 @@ select:focus {
   transform: translateY(-2px);
 }
 
+/* For Completed Task section */
+
+/* Completed task visual */
+.task-item.completed {
+  opacity: 0.6;
+  transform: none; /* keep hover subtle if you want */
+  filter: grayscale(10%); /* subtle desaturation */
+  background: rgba(255,255,255,0.02); /* slightly different bg */
+}
+
+/* strike-through for the title */
+.task-title.title-completed {
+  text-decoration: line-through;
+  color: var(--muted);
+  opacity: 0.9;
+}
+
+/* disable style for ghost buttons */
+.btn-ghost[disabled] {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: default;
+}
+
+.task-item {
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+
 /* Progress bar animation */
 .progress-fill {
   transition: width 0.8s ease-out;
@@ -483,4 +512,61 @@ textarea {
   .progress-fill {
     width: 60%;
   }
+}
+
+/* CSS for Pop up at our Edit button in task*/
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75); /* darker than background */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(2px); 
+}
+
+.modal-box {
+  background: rgba(20, 20, 20, 0.95); 
+  padding: 22px;
+  border-radius: 16px;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);  
+  backdrop-filter: blur(6px);            
+}
+
+
+.modal-box input,
+.modal-box textarea {
+  background: #111;                    
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.modal-box input:focus,
+.modal-box textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-primary {
+  padding: 8px 14px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
