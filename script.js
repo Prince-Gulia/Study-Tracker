@@ -18,6 +18,9 @@ const leftSideCompletedMeta = document.getElementById("completed-tasks")
 
 let editingTaskID = null
 
+// Accessing the Sort by value
+
+let currentSort = "recent" //By default it will show it in sequence
 
 // Loading Existing Files
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -40,9 +43,11 @@ function renderTasks() {
         return;
     }
 
-    const orderedMannerTasks = tasks.slice().sort((a,b) => {
-        return (a.status === "completed") - (b.status === "completed");
-    });
+    const orderedMannerTasks = sortTasks(tasks.slice());
+
+    // move completed tasks to bottom after sorting
+    orderedMannerTasks.sort((a, b) => (a.status === "completed") - (b.status === "completed"));
+
 
     // If there are Tasks exixts
     orderedMannerTasks.forEach(task => {
@@ -61,6 +66,7 @@ function renderTasks() {
                 </div>
 
                 <div class="task-actions">
+                    <button class="btn-ghost" onclick="openResources(${task.id})">Resources<?button>
                     <button class="btn-ghost" ${isCompleted ? "disabled" : `onclick="completeTask(${task.id})"`}>${isCompleted ? "Completed" : "Done"}</button>
                     <button class="btn-ghost" onclick="editTask(${task.id})">Edit</button>
                 </div>
@@ -68,6 +74,8 @@ function renderTasks() {
         `
 
         taskListContainer.insertAdjacentHTML("beforeend" , taskHTML);
+        const inserted = taskListContainer.lastElementChild;
+        setTimeout(() => inserted.classList.add("show"), 10);
     });
 
     updateStats();
@@ -111,7 +119,7 @@ function updateStats () {
 
 }
 
-// Function for Editing Task for editing task
+// Function for Editing Task 
 function editTask (taskID) {
     editingTaskID = taskID;
 
@@ -141,23 +149,88 @@ function editTask (taskID) {
 
  // Making our changes saved as a new Task in our storage
 
-    document.getElementById("edit-save").addEventListener("click", () => {
-        const task = tasks.find(t => t.id === taskID)
-        if(!task) return ;
+document.getElementById("edit-save").addEventListener("click", () => {
+    const task = tasks.find(t => t.id === editingTaskID)
+    if(!task) return ;
 
-        // Collecting the new data if task ID exists
-        task.title = document.getElementById("edit-title").value.trim();
-        task.resources = document.getElementById("edit-resources").value.split(",").map(r => r.trim());
-        task.timeRequired = parseInt(document.getElementById("edit-time").value);
-        task.date = document.getElementById("edit-date").value;
+    // Collecting the new data if task ID exists
+    task.title = document.getElementById("edit-title").value.trim();
+    task.resources = document.getElementById("edit-resources").value.split(",").map(r => r.trim());
+    task.timeRequired = parseInt(document.getElementById("edit-time").value);
+    task.date = document.getElementById("edit-date").value;
 
-        // Saving and rendering again to show the updated Task
+    // Saving and rendering again to show the updated Task
 
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-        renderTasks();
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    renderTasks();
 
-        document.getElementById("edit-modal").style.display = "none"; // Making it Hidden again
-    })
+    document.getElementById("edit-modal").style.display = "none"; // Making it Hidden again
+})
+
+// Sort button event Handler
+
+document.getElementById("sort-select").addEventListener("change", (e) => {
+  currentSort = e.target.value;
+  renderTasks();  // re-render with new sort order
+});
+
+
+// Function for the sorting of our task in our right section
+
+function sortTasks(taskArray) {
+    if (currentSort === "recent") {
+        return taskArray.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+    }
+
+    if (currentSort === "oldest") {
+        return taskArray.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt))
+    }
+
+    if (currentSort === "duesoon") {
+        return taskArray.sort((a,b) => new Date(a.date) - new Date(b.date));
+    }
+
+    if (currentSort === "dueLatest") {
+        return taskArray.sort((a,b) => new Date(b.date) - new Date(a.date))
+    }
+
+    return taskArray
+}
+
+// Function For Resources Opening Modal
+
+function openResources(taskID) {
+    const task = tasks.find (t => t.id === taskID)
+    if(!task) return ; //Means Task did not found
+
+    const listDiv = document.getElementById("resource-list");
+    listDiv.innerHTML = "";
+
+    if (task.resources.length === 0) {
+        listDiv.innerHTML = `<div style="color:var(--muted);font-size:14px">No Resources Added</div>`;
+    } else {
+        task.resources.forEach( link => {
+            listDiv.innerHTML += `
+                <a href="${link}" target="_blank" style="
+                    color:var(--accent);
+                    text-decoration:underline;
+                    font-size:14px;
+                    word-break:break-all;
+                ">
+                ${link} 
+                </a> 
+            `;
+        })
+    }
+
+    document.getElementById("resource-modal").style.display = "flex";
+}
+
+// For Closing the Resource Modal
+
+document.getElementById("resource-close").addEventListener("click", () => {
+    document.getElementById("resource-modal").style.display = "none";
+});
 
 
 // Form Submit Handling

@@ -136,7 +136,12 @@
               <div style="font-weight:700">Tasks</div>
               <div style="font-size:12px;color:var(--muted)">Your active & recent tasks</div>
             </div>
-            <div style="font-size:13px;color:var(--muted)">Sort: <select><option>Recent</option><option>Due</option></select></div>
+            <div style="font-size:13px;color:var(--muted)">Sort: <select id="sort-select">
+              <option value="recent">Recent</option>
+              <option value="oldest">Oldest</option>
+              <option value="duesoon">Due Soon</option>
+              <option value="dueLatest">Due Latest</option>
+            </select></div>
           </div>
 
           <div class="task-list" id="task-list">
@@ -229,6 +234,21 @@
       </div>
     </div>
   </div>
+
+  <!-- Resources Modal -->
+
+  <div id="resource-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3>Task Resources</h3>
+
+      <div id="resource-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+
+      <div class="modal-actions">
+        <button class="btn-primary" id="resource-close">Close</button>
+      </div>
+    </div>
+  </div>
+
 
 </body>
 

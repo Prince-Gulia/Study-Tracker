@@ -95,6 +95,16 @@ select:focus {
   opacity: 0.9;
 }
 
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.task-item {
+    transition: all 0.3s ease;
+}
+
 /* disable style for ghost buttons */
 .btn-ghost[disabled] {
   opacity: 0.45;
@@ -106,6 +116,13 @@ select:focus {
   transition: transform 220ms ease, opacity 220ms ease;
 }
 
+/* For Resource Modal */
+
+#resource-modal .modal-box {
+  width: 380px;
+  max-height: 420px;
+  overflow-y: auto;
+}
 
 /* Progress bar animation */
 .progress-fill {
@@ -570,3 +587,19 @@ textarea {
   border-radius: 6px;
   cursor: pointer;
 }
+
+/* Animation for the New Task adding */
+
+.task-item {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.task-item.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+
