@@ -66,7 +66,7 @@ function renderTasks() {
                 </div>
 
                 <div class="task-actions">
-                    <button class="btn-ghost" onclick="openResources(${task.id})">Resources<?button>
+                    <button class="btn-ghost" onclick="openResources(${task.id})">Resources</button>
                     <button class="btn-ghost" ${isCompleted ? "disabled" : `onclick="completeTask(${task.id})"`}>${isCompleted ? "Completed" : "Done"}</button>
                     <button class="btn-ghost" onclick="editTask(${task.id})">Edit</button>
                 </div>
@@ -79,6 +79,7 @@ function renderTasks() {
     });
 
     updateStats();
+    updateTodayStatsUI();
 }
 
 // Completed Task function after user completes the task
@@ -90,12 +91,13 @@ function completeTask (taskID) {
     if (tasks[atIndex].status === "completed") return;
 
     tasks[atIndex].status = "completed";
-    tasks[atIndex].completedAt = new Date().toISOString()
+    tasks[atIndex].completedAt = new Date().toISOString();
 
     localStorage.setItem("tasks", JSON.stringify(tasks));
 
     renderTasks();
     updateStats();
+    updateTodayStatsUI();
 }
 
 // Update stats function where all the stats will be updated after form submit or task completion
@@ -117,6 +119,69 @@ function updateStats () {
 
     progressFill.style.width = effortPercent + "%" //Updating the CSS for progress bar
 
+}
+
+// Function To get the Current day (if it's a new day or the current day)
+function getCurrentDay() {
+    const now = new Date();
+    const hour = now.getHours();
+
+    if (hour >= 3) {
+        // Means it's the next day
+        return now.toISOString().split("T")[0]; //It creates an array that is split by Time part and will send the date -> YYYY/MM/DD
+    }
+
+    // If it's still a current day
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate()-1);
+    return yesterday.toISOString().split("T")[0];
+}
+
+// Function that will count today's completion and today's total tasks
+function getTodayStats () {
+    const today = getCurrentDay();
+
+    let completedToday = 0;
+    let createdToday = 0;
+
+    tasks.forEach (task => {
+
+        const createdDate = task.createdAt.split("T")[0];
+        if (createdDate === today) {
+            createdToday++;
+        }
+
+        if (task.completedAt) {
+            const completedDate = task.completedAt.split("T")[0];
+            if (completedDate === today) {
+                completedToday++;
+            }
+        }
+    });
+
+    return {
+        completedToday,
+        createdToday
+    };
+}
+
+// Function for Displaying the Stats for this completion and Pending
+function updateTodayStatsUI (){
+    const {completedToday , createdToday} =getTodayStats();
+
+    const todayBox = document.getElementById("today-progress-box");
+
+    todayBox.innerHTML = `
+        <div style="font-size:14px; line-height:1.6;">
+            <strong>Completed Today:</strong> ${completedToday} <br>
+            <strong>Created Today:</strong> ${createdToday} <br>
+            <strong>Efficiency:</strong> ${
+                createdToday === 0 
+                ? "0%" 
+                : Math.round((completedToday / createdToday) * 100) + "%"
+            }
+        </div>
+    `
 }
 
 // Function for Editing Task 
@@ -268,10 +333,10 @@ taskForm.addEventListener("submit", (e) => {
 
     renderTasks();  // UI update
     updateStats();  // For The Update in the task counters
+    updateTodayStatsUI(); //For Showing the tasks stats
 });
 
 
 // Initial Rendering if the user reload the webpage
 
 renderTasks();
-updateStats();
