@@ -1,3 +1,10 @@
+import Chart from 'chart.js';
+
+// Variables to destroy the previous charts if existed before
+let lineChart = null;
+let pieChart = null;
+let barChart = null;
+
 // Accessing the Form Elements
 const taskForm = document.querySelector(".task-form");
 const taskType = document.getElementById("task-type");
@@ -21,6 +28,10 @@ let editingTaskID = null
 // Accessing the Sort by value
 
 let currentSort = "recent" //By default it will show it in sequence
+
+//Creating the Variables for maintaining Streak and Last day streak to not over write one day streak twice
+let streak = Number(localStorage.getItem("streak")) || 0; //If Found then maintain it or if not then start with 0
+let lastStreakDay = localStorage.getItem("lastStreakDay") || null; //If found then use that and if not then start with Null
 
 // Loading Existing Files
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -80,7 +91,45 @@ function renderTasks() {
 
     updateStats();
     updateTodayStatsUI();
+    updateStreak();
+    updateAllCharts();
 }
+
+// Function For getting the data for analysis like type of the task and the status and their counters to analyse
+function getAnalysis () {
+    const taskRecords = {
+        "skill" : {completed : 0 , incomplete : 0 , percentage : 0},
+        "study" : {completed : 0 , incomplete : 0 , percentage : 0},
+        "book" : {completed : 0 , incomplete : 0 , percentage : 0},
+    }
+
+    tasks.forEach(task => {
+        let type = task.type;
+
+        if(!taskRecords[type]) return;
+
+        if (task.status === "completed") {
+            taskRecords[type].completed++;
+        } else {
+            taskRecords[type].incomplete++;
+        }
+    })
+
+    Object.keys(taskRecords).forEach(type=> { //It provides us an array based on the keys -> types of tasks i.e -> study : {object which holds the key value pairs of completed, incomplete and percentage}
+        const {completed , incomplete} = taskRecords[type]; // It is Destructuring, where we are creating 2 variables with this 
+
+        // completed = taskRecords[type]completed
+        // incomplete = taskRecords[type]incomplete 
+        // It is same as what we wrote above
+
+        const total = completed + incomplete;
+
+        taskRecords[type].percentage = total === 0 ? 0 : Math.round( (completed / total) * 100 );
+    })
+
+    return taskRecords;
+}
+
 
 // Completed Task function after user completes the task
 function completeTask (taskID) {
@@ -98,6 +147,8 @@ function completeTask (taskID) {
     renderTasks();
     updateStats();
     updateTodayStatsUI();
+    updateStreak();
+    updateAllCharts();
 }
 
 // Update stats function where all the stats will be updated after form submit or task completion
@@ -209,6 +260,7 @@ function editTask (taskID) {
     document.getElementById("edit-cancel").addEventListener("click", () => {
         document.getElementById("edit-modal").style.display = "none"; 
     })
+    updateAllCharts();
 
 }
 
@@ -289,6 +341,40 @@ function openResources(taskID) {
     }
 
     document.getElementById("resource-modal").style.display = "flex";
+} 
+
+// Function for Updating the streak and maintaining it
+
+function updateStreak () {
+    // We will use the getCurrentDay() to get today's day and if it is same as lastStreakDay then we won't change the consistency but if the day is another then we will change streak
+
+    const today = getCurrentDay();
+
+    if (today === lastStreakDay) return;
+
+    const {completedToday , createdToday} = getTodayStats();
+
+    const efforts = createdToday === 0 ? 0 : Math.floor((completedToday / createdToday) * 100);
+
+    if (efforts >= 75) {
+        streak++;
+    }else {
+        streak = 0;
+    }
+
+    lastStreakDay = today;
+
+    localStorage.setItem("streak",streak);
+    localStorage.setItem("lastStreakDay",lastStreakDay)
+
+    updateStreakUI();
+}
+
+// Function to update the UI for the streak
+
+function updateStreakUI () {
+    const consistency = document.getElementById("consistency")
+    consistency.textContent = streak;
 }
 
 // For Closing the Resource Modal
@@ -297,6 +383,231 @@ document.getElementById("resource-close").addEventListener("click", () => {
     document.getElementById("resource-modal").style.display = "none";
 });
 
+// Function to get the data for CHARTS
+function getChartData () {
+    const analysis = getAnalysis();
+
+    // Modifying the data according to our uses : 
+
+    // 1st for Pie Chart of completion/Incompletion or Ratio of every task completion
+
+    const categoryPerformance = {
+        labels : ["Skill" , "Study" , "Book"],
+        completed : [
+            analysis.skill.completed,
+            analysis.study.completed,
+            analysis.book.completed
+        ],
+        incomplete : [
+            analysis.skill.incomplete,
+            analysis.study.incomplete,
+            analysis.book.incomplete
+        ],
+        percentage : [
+            analysis.skill.percentage,
+            analysis.study.percentage,
+            analysis.book.percentage
+        ]
+    }
+
+    // Data for Bar Chart
+
+    const categoryDistribution = {
+        labels : ["Skill" , "Study" , "Book"],
+        totals : [
+            categoryPerformance.completed[0] + categoryPerformance.incomplete[0],
+            categoryPerformance.completed[1] + categoryPerformance.incomplete[1],
+            categoryPerformance.completed[2] + categoryPerformance.incomplete[2],
+        ]
+    }
+
+    // Data for the line chart to see the progress over 7 days or 30 days
+
+    let dailyStats = {};
+
+    // This loop is for getting all the dates from the data
+
+    tasks.forEach(task => {
+        let createdDate = task.createdAt.split("T")[0];
+
+        if (!dailyStats[createdDate]) {
+            dailyStats[createdDate] = {created : 0 , completed : 0};
+        }
+        dailyStats[createdDate].created++;
+
+        if (task.completedAt !== null) {
+            let completedDate = task.completedAt.split("T")[0];
+
+            if (!dailyStats[completedDate]) {
+                dailyStats[completedDate] = {created : 0 , completed : 0};
+            }
+            dailyStats[completedDate].completed++;
+        }
+    })
+
+    //  Now for Handling the Last 7 Days and 30 Days 
+    let last7 = {
+        dates : [],
+        created : [],
+        completed : []
+    }
+
+    let last30 = {
+        dates : [],
+        created : [],
+        completed : []
+    }
+
+    let today = new Date (getCurrentDay());
+
+    // For 7 Days
+
+    for (let i = 0 ; i < 7 ; i++) {
+        let d = new Date(today);
+        d.setDate(today.getDate() - i);
+
+        let key = d.toISOString().split("T")[0]; //To get the date only for checking if the date exists in out dailyStats or not
+
+        if(!dailyStats[key]) {
+            dailyStats[key] = {created : 0 , completed : 0};
+        }   
+
+        last7.dates.push(key);
+        last7.created.push(dailyStats[key].created);
+        last7.completed.push(dailyStats[key].completed);
+    }
+
+    // For 30 Days 
+
+    for (let i = 0 ; i < 30 ; i++){
+        let d = new Date(today);
+        d.setDate(today.getDate() - i);
+
+        let key = d.toISOString().split("T")[0];
+
+        if (!dailyStats[key]) {
+            dailyStats[key] = {created : 0 , completed : 0};
+        }
+
+        last30.dates.push(key);
+        last30.created.push(dailyStats[key].created);
+        last30.completed.push(dailyStats[key].completed);
+    }
+
+    return {
+        categoryPerformance,
+        categoryDistribution,
+        last7,
+        last30
+    };
+}
+
+
+// Charts Section Code using Chart.js
+
+function renderPieChart(categoryPerformance) {
+    const pieCanvas = document.getElementById("categoryPie");
+
+    // destroy previous chart
+    if (pieChart) pieChart.destroy();
+
+    pieChart = new Chart(pieCanvas, {
+        type: "doughnut",
+        data: {
+            labels: categoryPerformance.labels,
+            datasets: [{
+                data: categoryPerformance.percentage,
+                backgroundColor: ["#4F46E5", "#22C55E", "#F97316"],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { position: "bottom" }
+            }
+        }
+    });
+}
+
+
+function renderBarChart(categoryDistribution) {
+    const barCanvas = document.getElementById("categoryBar");
+
+    if (barChart) barChart.destroy();
+
+    barChart = new Chart(barCanvas, {
+        type: "bar",
+        data: {
+            labels: categoryDistribution.labels,
+            datasets: [{
+                label: "Total Tasks",
+                data: categoryDistribution.totals,
+                backgroundColor: "#4F46E5",
+                borderRadius: 8
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+}
+
+function renderLineChart(lastXDays) {
+    const lineCanvas = document.getElementById("dailyLine");
+
+    if (lineChart) lineChart.destroy();
+
+    lineChart = new Chart(lineCanvas, {
+        type: "line",
+        data: {
+            labels: lastXDays.dates.slice().reverse(), // FIXED
+            datasets: [
+                {
+                    label: "Created",
+                    data: lastXDays.created.slice().reverse(), // FIXED
+                    borderColor: "#3B82F6",
+                    tension: 0.3
+                },
+                {
+                    label: "Completed",
+                    data: lastXDays.completed.slice().reverse(), // FIXED
+                    borderColor: "#22C55E",
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            plugins: { legend: { position: "bottom" } }
+        }
+    });
+}
+
+// Function to update ALl chart at Once
+
+function updateAllCharts() {
+    const data = getChartData();
+
+    renderLineChart(data.last7);
+    renderPieChart(data.categoryPerformance);
+    renderBarChart(data.categoryDistribution);
+}
+
+// Event Listener for the option of 7 days and 30 days in Line Chart
+
+document.getElementById("chart-period").addEventListener("change", function () {
+    const allData = getChartData();
+
+    if (this.value === "7") {
+        renderLineChart(allData.last7);
+    } else {
+        renderLineChart(allData.last30);
+    }
+});
 
 // Form Submit Handling
 taskForm.addEventListener("submit", (e) => {
@@ -334,6 +645,8 @@ taskForm.addEventListener("submit", (e) => {
     renderTasks();  // UI update
     updateStats();  // For The Update in the task counters
     updateTodayStatsUI(); //For Showing the tasks stats
+    updateStreak();
+    updateAllCharts(); //For Updating the chart at every new task arrival
 });
 
 

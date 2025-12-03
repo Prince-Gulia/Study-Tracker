@@ -1,261 +1,331 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Study Tracker — Dashboard</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-
-    <nav class="navbar">
-      <div class="brand">
-        <div class="logo">ST</div>
-        <div>
-          <div class="app-name">Study Tracker</div>
-          <div class="app-sub">Focus. Track. Improve.</div>
-        </div>
-      </div>
-
-      <div class="nav-right">
-        <div class="user-card">
-          <div style="text-align:right;margin-right:8px">
-            <div style="font-weight:700">Prince</div>
-            <div style="font-size:12px;color:var(--muted)">BCA • 2nd Year</div>
-          </div>
-          <div class="avatar">P</div>
-        </div>
-      </div>
-    </nav>
-
-    <div class="grid">
-
-      <!-- LEFT: Controls / Add Task / Quick Stats -->
-      <aside class="panel">
-        <div class="section-title">Add / Quick Actions</div>
-
-        <!-- Add Task Form (static structure — JS will control dynamics) -->
-        <form class="task-form" id="task-form">
-          <div class="form-group">
-            <label for="task-type">Task Type</label>
-            <select id="task-type">
-              <option value="">Select type</option>
-              <option value="study">Study</option>
-              <option value="skill">Skill</option>
-              <option value="book">Book</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label id="detail-label" for="detail-input">Title / Subject</label>
-            <input id="detail-input" type="text" placeholder="eg. Calculus Chapter 4 / Deep Work / JavaScript Basics" />
-          </div>
-
-          <div class="form-group">
-            <label for="resources">Resources (links, videos)</label>
-            <textarea id="resources" placeholder="Add URLs, notes or short description..."></textarea>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group" style="flex:1">
-              <label for="amount">Hours / Pages</label>
-              <input id="amount" type="number" placeholder="e.g., 2" />
-            </div>
-            <div class="form-group" style="width:130px">
-              <label for="due-date">Date</label>
-              <input id="due-date" type="date" />
-            </div>
-          </div>
-
-          <button type="submit" class="add-task-btn">Add Task</button>
-        </form>
-
-        <!-- Quick stat cards -->
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-number" id="total-tasks">-</div>
-            <div class="stat-label">Total Tasks</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number" id="completed-tasks">-</div>
-            <div class="stat-label">Completed</div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Study Tracker — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--Added chart.js-->
+  </head>
+  <body>
+    <div class="container">
+      <nav class="navbar">
+        <div class="brand">
+          <div class="logo">ST</div>
+          <div>
+            <div class="app-name">Study Tracker</div>
+            <div class="app-sub">Focus. Track. Improve.</div>
           </div>
         </div>
 
-        <div class="sidebar-info">
-          <h3 class="sidebar-info-title">Academic Info</h3>
-
-          <div class="info-item">
-            <p class="info-label">Institute</p>
-            <p class="info-value">Institute of Innovation in Technology and Management</p>
-          </div>
-
-          <div class="info-item">
-            <p class="info-label">Exam</p>
-            <p class="info-value">
-              <span class="days-left-exam">XX days left</span>
-              <span class="info-date">(8 Dec 2025)</span>
-            </p>
-          </div>
-
-          <div class="info-item">
-            <p class="info-label">Semester Ends</p>
-            <p class="info-value">
-              <span span class="days-left-sem">XX days left</span>
-              <span class="info-date">(28 Dec 2025)</span>
-            </p>
-          </div>
-        </div>
-
-
-      </aside>
-
-      <!-- RIGHT: Main content (summary, tasks, charts) -->
-      <main class="main-area">
-
-        <div class="summary-card">
-          <div class="progress-box">
-            <div class="progress-title">Overall Progress</div>
-            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-            <div class="progress-meta">Completed <strong id="completed-meta">-</strong> of <strong id="total-meta">-</strong> tasks</div>
-          </div>
-
-          <div style="min-width:220px;text-align:right">
-            <div style="font-weight:700;font-size:22px">Effort: <span id="effort-score">-</span></div>
-            <div style="color:var(--muted);font-size:12px;margin-top:8px">Consistency: <strong id="consistency">-</strong> days</div>
-          </div>
-        </div>
-
-        <!-- Task list -->
-        <section>
-          <div style="display:flex;justify-content:space-between;align-items:end;margin-bottom:8px">
-            <div>
-              <div style="font-weight:700">Tasks</div>
-              <div style="font-size:12px;color:var(--muted)">Your active & recent tasks</div>
-            </div>
-            <div style="font-size:13px;color:var(--muted)">Sort: <select id="sort-select">
-              <option value="recent">Recent</option>
-              <option value="oldest">Oldest</option>
-              <option value="duesoon">Due Soon</option>
-              <option value="dueLatest">Due Latest</option>
-            </select></div>
-          </div>
-
-          <div class="task-list" id="task-list">
-            <!-- Example static task items — JS will render these dynamically later -->
-            <div class="task-item">
-              <div class="task-type type-study">Study</div>
-              <div class="task-body">
-                <div class="task-title">Calculus — Chapter 4</div>
-                <div class="task-meta">2 hours • Due: 2025-12-04</div>
+        <div class="nav-right">
+          <div class="user-card">
+            <div style="text-align: right; margin-right: 8px">
+              <div style="font-weight: 700">Prince</div>
+              <div style="font-size: 12px; color: var(--muted)">
+                BCA • 2nd Year
               </div>
-              <div class="task-actions">
-                <button class="btn-ghost">Done</button>
-                <button class="btn-ghost">Edit</button>
+            </div>
+            <div class="avatar">P</div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="grid">
+        <!-- LEFT: Controls / Add Task / Quick Stats -->
+        <aside class="panel">
+          <div class="section-title">Add / Quick Actions</div>
+
+          <!-- Add Task Form (static structure — JS will control dynamics) -->
+          <form class="task-form" id="task-form">
+            <div class="form-group">
+              <label for="task-type">Task Type</label>
+              <select id="task-type">
+                <option value="">Select type</option>
+                <option value="study">Study</option>
+                <option value="skill">Skill</option>
+                <option value="book">Book</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label id="detail-label" for="detail-input"
+                >Title / Subject</label
+              >
+              <input
+                id="detail-input"
+                type="text"
+                placeholder="eg. Calculus Chapter 4 / Deep Work / JavaScript Basics"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="resources">Resources (links, videos)</label>
+              <textarea
+                id="resources"
+                placeholder="Add URLs, notes or short description..."
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="flex: 1">
+                <label for="amount">Hours / Pages</label>
+                <input id="amount" type="number" placeholder="e.g., 2" />
+              </div>
+              <div class="form-group" style="width: 130px">
+                <label for="due-date">Date</label>
+                <input id="due-date" type="date" />
               </div>
             </div>
 
-            <div class="task-item">
-              <div class="task-type type-book">Book</div>
-              <div class="task-body">
-                <div class="task-title">Deep Work — Read Ch. 5</div>
-                <div class="task-meta">35 pages • Resources: 2 links</div>
+            <button type="submit" class="add-task-btn">Add Task</button>
+          </form>
+
+          <!-- Quick stat cards -->
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-number" id="total-tasks">-</div>
+              <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="completed-tasks">-</div>
+              <div class="stat-label">Completed</div>
+            </div>
+          </div>
+
+          <div class="sidebar-info">
+            <h3 class="sidebar-info-title">Academic Info</h3>
+
+            <div class="info-item">
+              <p class="info-label">Institute</p>
+              <p class="info-value">
+                Institute of Innovation in Technology and Management
+              </p>
+            </div>
+
+            <div class="info-item">
+              <p class="info-label">Exam</p>
+              <p class="info-value">
+                <span class="days-left-exam">XX days left</span>
+                <span class="info-date">(8 Dec 2025)</span>
+              </p>
+            </div>
+
+            <div class="info-item">
+              <p class="info-label">Semester Ends</p>
+              <p class="info-value">
+                <span span class="days-left-sem">XX days left</span>
+                <span class="info-date">(28 Dec 2025)</span>
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT: Main content (summary, tasks, charts) -->
+        <main class="main-area">
+          <div class="summary-card">
+            <div class="progress-box">
+              <div class="progress-title">Overall Progress</div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
               </div>
-              <div class="task-actions">
-                <button class="btn-ghost">Done</button>
-                <button class="btn-ghost">Edit</button>
+              <div class="progress-meta">
+                Completed <strong id="completed-meta">-</strong> of
+                <strong id="total-meta">-</strong> tasks
               </div>
             </div>
 
+            <div style="min-width: 220px; text-align: right">
+              <div style="font-weight: 700; font-size: 22px">
+                Effort: <span id="effort-score">-</span>
+              </div>
+              <div
+                style="color: var(--muted); font-size: 12px; margin-top: 8px"
+              >
+                Consistency: <strong id="consistency">-</strong> days
+              </div>
+            </div>
           </div>
-        </section>
 
-        <!-- Charts -->
-        <section>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div style="font-weight:700">Progress Insights</div>
-            <div style="color:var(--muted);font-size:13px">Period: <select><option>Last 7 days</option><option>Last 30 days</option></select></div>
-          </div>
+          <!-- Task list -->
+          <section>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: end;
+                margin-bottom: 8px;
+              "
+            >
+              <div>
+                <div style="font-weight: 700">Tasks</div>
+                <div style="font-size: 12px; color: var(--muted)">
+                  Your active & recent tasks
+                </div>
+              </div>
+              <div style="font-size: 13px; color: var(--muted)">
+                Sort:
+                <select id="sort-select">
+                  <option value="recent">Recent</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="duesoon">Due Soon</option>
+                  <option value="dueLatest">Due Latest</option>
+                </select>
+              </div>
+            </div>
 
-          <div class="charts">
-            <div class="chart-box">
-              <div style="font-weight:700;margin-bottom:8px">Today: Completed vs Pending</div>
-              <div class="chart-placeholder">
-                <div id="today-progress-box" style="padding:20px; color:var(--muted);">
-                  Loading today's stats…
+            <div class="task-list" id="task-list">
+              <!-- Example static task items — JS will render these dynamically later -->
+              <div class="task-item">
+                <div class="task-type type-study">Study</div>
+                <div class="task-body">
+                  <div class="task-title">Calculus — Chapter 4</div>
+                  <div class="task-meta">2 hours • Due: 2025-12-04</div>
+                </div>
+                <div class="task-actions">
+                  <button class="btn-ghost">Done</button>
+                  <button class="btn-ghost">Edit</button>
+                </div>
+              </div>
+
+              <div class="task-item">
+                <div class="task-type type-book">Book</div>
+                <div class="task-body">
+                  <div class="task-title">Deep Work — Read Ch. 5</div>
+                  <div class="task-meta">35 pages • Resources: 2 links</div>
+                </div>
+                <div class="task-actions">
+                  <button class="btn-ghost">Done</button>
+                  <button class="btn-ghost">Edit</button>
                 </div>
               </div>
             </div>
-            <div class="chart-box">
-              <div style="font-weight:700;margin-bottom:8px">Progress Over Time</div>
-              <div class="chart-placeholder">LINE CHART (placeholder)</div>
+          </section>
+
+          <!-- Charts -->
+          <section>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+              "
+            >
+              <div style="font-weight: 700">Progress Insights</div>
+              <div style="color: var(--muted); font-size: 13px">
+                Period:
+                <select id="chart-period">
+                  <option value="7">Last 7 days</option>
+                  <option value="30">Last 30 days</option>
+                </select>
+              </div>
             </div>
 
-            <div class="chart-box">
-              <div style="font-weight:700;margin-bottom:8px">Books / Skills Summary</div>
-              <div class="chart-placeholder">BAR / DONUT (placeholder)</div>
+            <div class="charts">
+              <!-- TODAY SUMMARY (TEXT ONLY) -->
+              <div class="chart-box">
+                <div style="font-weight: 700; margin-bottom: 8px">
+                  Today: Completed vs Pending
+                </div>
+                <div class="chart-placeholder">
+                  <div
+                    id="today-progress-box"
+                    style="padding: 20px; color: var(--muted)"
+                  >
+                    Loading today's stats…
+                  </div>
+                </div>
+              </div>
+
+              <!-- LINE CHART -->
+              <div class="chart-box">
+                <div style="font-weight: 700; margin-bottom: 8px">
+                  Progress Over Time
+                </div>
+                <div class="chart-placeholder">
+                  <canvas id="dailyLine"></canvas>
+                </div>
+              </div>
+
+              <!-- PIE / DONUT CHART -->
+              <div class="chart-box">
+                <div style="font-weight: 700; margin-bottom: 8px">
+                  Books / Skills Summary
+                </div>
+                <div class="chart-placeholder">
+                  <canvas id="categoryPie"></canvas>
+                </div>
+              </div>
+
+              <!-- BAR CHART -->
+              <div class="chart-box">
+                <div style="font-weight: 700; margin-bottom: 8px">
+                  Subject Distribution
+                </div>
+                <div class="chart-placeholder">
+                  <canvas id="categoryBar"></canvas>
+                </div>
+              </div>
             </div>
-            <div class="chart-box">
-              <div style="font-weight:700;margin-bottom:8px">Subject Distribution</div>
-              <div class="chart-placeholder">HEATMAP / LIST (placeholder)</div>
-            </div>
+          </section>
+
+          <div class="footer">
+            Made By Prince Gulia A Study Tracker • Prototype
           </div>
-        </section>
-
-        <div class="footer">Made By Prince Gulia A Study Tracker • Prototype</div>
-
-      </main>
-
+        </main>
+      </div>
     </div>
-
-  </div>
 
     <!-- The Pop up section after clicking on the Edit button in tasks -->
 
     <!-- EDIT MODAL -->
-  <div id="edit-modal" class="modal-overlay">
-    <div class="modal-box">
-      <h3>Edit Task</h3>
+    <div id="edit-modal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>Edit Task</h3>
 
-      <label>Title</label>
-      <input type="text" id="edit-title"/>
+        <label>Title</label>
+        <input type="text" id="edit-title" />
 
-      <label>Resources (comma separated)</label>
-      <textarea id="edit-resources"></textarea>
+        <label>Resources (comma separated)</label>
+        <textarea id="edit-resources"></textarea>
 
-      <label>Hours / Pages</label>
-      <input type="number" id="edit-time"/>
+        <label>Hours / Pages</label>
+        <input type="number" id="edit-time" />
 
-      <label>Due Date</label>
-      <input type="date" id="edit-date"/>
+        <label>Due Date</label>
+        <input type="date" id="edit-date" />
 
-      <div class="modal-actions">
-        <button class="btn-ghost" id="edit-cancel">Cancel</button>
-        <button class="btn-primary" id="edit-save">Save Changes</button>
+        <div class="modal-actions">
+          <button class="btn-ghost" id="edit-cancel">Cancel</button>
+          <button class="btn-primary" id="edit-save">Save Changes</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Resources Modal -->
+    <!-- Resources Modal -->
 
-  <div id="resource-modal" class="modal-overlay">
-    <div class="modal-box">
-      <h3>Task Resources</h3>
+    <div id="resource-modal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>Task Resources</h3>
 
-      <div id="resource-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <div
+          id="resource-list"
+          style="display: flex; flex-direction: column; gap: 10px"
+        ></div>
 
-      <div class="modal-actions">
-        <button class="btn-primary" id="resource-close">Close</button>
+        <div class="modal-actions">
+          <button class="btn-primary" id="resource-close">Close</button>
+        </div>
       </div>
     </div>
-  </div>
+  </body>
 
-
-</body>
-
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </html>
