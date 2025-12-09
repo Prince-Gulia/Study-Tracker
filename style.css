@@ -5,7 +5,7 @@
   --accent: #7c3aed; /* neon purple */
   --accent-2: #06b6d4; /* neon aqua */
   --glass: rgba(255, 255, 255, 0.03);
-  --glass-2: rgba(255, 255, 255, 0.02);
+  --glass_2: rgba(255, 255, 255, 0.02);
   --success: #16a34a;
   --danger: #ef4444;
   --radius: 12px;
@@ -288,7 +288,7 @@ input[type="number"],
 textarea,
 select,
 input[type="date"] {
-  background: var(--glass-2);
+  background: var(--glass_2);
   color: inherit;
   border: 1px solid rgba(255, 255, 255, 0.04);
   padding: 10px 12px;
@@ -649,4 +649,154 @@ textarea {
 .task-item.show {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Adding the New Setting Modal styling */
+
+#settings-modal {
+  display: none; /* hidden by default */
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(3px);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Main settings box */
+.settings-box {
+  width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: rgba(20, 20, 20, 0.95);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  animation: settingsPop 0.32s ease forwards;
+  color: white;
+}
+
+@keyframes settingsPop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.settings-header h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+#settings-close {
+  font-size: 20px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+/* Content layout */
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  margin-top: 10px;
+}
+
+/* Section Styling */
+.settings-section {
+  background: rgba(255,255,255,0.04);
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.settings-section h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* Inputs */
+.settings-section label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.settings-section input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--glass_2);
+  color: white;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+
+.settings-section input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* Theme Buttons */
+.theme-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.theme-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--glass);
+  color: var(--muted);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.theme-btn:hover {
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+}
+
+.theme-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(124,58,237,0.15);
+}
+
+/* Save Footer */
+.settings-footer {
+  margin-top: 20px;
+  text-align: right;
+}
+
+#save-settings {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+/* Scrollbar */
+.settings-box::-webkit-scrollbar {
+  width: 6px;
+}
+.settings-box::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
 }

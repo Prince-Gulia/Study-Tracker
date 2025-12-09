@@ -23,10 +23,11 @@
         </div>
 
         <div class="nav-right">
+          <button class="setting">Setting</button>
           <div class="user-card">
             <div style="text-align: right; margin-right: 8px">
-              <div style="font-weight: 700">Prince</div>
-              <div style="font-size: 12px; color: var(--muted)">
+              <div id="navbar-username" style="font-weight: 700">Prince</div>
+              <div id="navbar-user-details" style="font-size: 12px; color: var(--muted)">
                 BCA • 2nd Year
               </div>
             </div>
@@ -323,8 +324,78 @@
         </div>
       </div>
     </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="modal-overlay">
+      <div class="modal-box settings-box">
+        <div class="settings-header">
+          <h2>Settings</h2>
+          <button id="settings-close" class="btn-ghost">✕</button>
+        </div>
+
+        <div class="settings-content">
+          <!-- USER INFO -->
+          <section class="settings-section">
+            <h3>User Information</h3>
+
+            <label for="settings-username">Username</label>
+            <input type="text" id="settings-username" />
+
+            <label for="settings-course">Course</label>
+            <input type="text" id="settings-course" />
+
+            <label for="settings-year">Year</label>
+            <input type="text" id="settings-year" />
+          </section>
+
+          <!-- ACADEMIC INFO -->
+          <section class="settings-section">
+            <h3>Academic Information</h3>
+
+            <label for="settings-institute">Institute</label>
+            <input type="text" id="settings-institute" />
+
+            <label for="settings-examdate">Exam Date</label>
+            <input type="date" id="settings-examdate" />
+
+            <label for="settings-semend">Semester End Date</label>
+            <input type="date" id="settings-semend" />
+          </section>
+
+          <!-- THEME SECTION -->
+          <section class="settings-section">
+            <h3>Select Theme</h3>
+
+            <div class="theme-buttons">
+              <button class="theme-btn" data-theme="dark">Dark</button>
+              <button class="theme-btn" data-theme="light">Light</button>
+              <button class="theme-btn" data-theme="neon">Neon</button>
+            </div>
+          </section>
+
+          <!-- BACKUP + RESTORE -->
+          <section class="settings-section">
+            <h3>Backup & Restore</h3>
+
+            <button id="export-data" class="btn-primary" style="width:100%;margin-bottom:10px;">
+              Export Backup
+            </button>
+
+            <button id="import-data" class="btn-ghost" style="width:100%;">
+              Import Backup
+            </button>
+
+            <input type="file" id="import-file-input" accept="application/json" style="display:none;">
+          </section>
+        </div>
+
+        <div class="settings-footer">
+          <button id="save-settings" class="btn-primary">Save Settings</button>
+        </div>
+      </div>
+    </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!--Added chart.js-->
-  <script src="script.js"></script>
+  <script type="module" src="js/app.js"></script>
 </html>
