@@ -1,13 +1,16 @@
 :root {
   --bg: #0f1724; /* deep */
   --card: #0b1220;
+  --text: #ffffff;
   --muted: #9aa4b2;
   --accent: #7c3aed; /* neon purple */
-  --accent-2: #06b6d4; /* neon aqua */
+  --accent_2: #06b6d4; /* neon aqua */
   --glass: rgba(255, 255, 255, 0.03);
   --glass_2: rgba(255, 255, 255, 0.02);
   --success: #16a34a;
   --danger: #ef4444;
+  --border: rgba(255,255,255,0.04);
+  --shadow: rgba(0,0,0,0.35);
   --radius: 12px;
   color-scheme: dark;
 }
@@ -16,6 +19,8 @@
 body {
   opacity: 0;
   animation: fadeIn 0.6s ease-out forwards;
+  background: var(--bg);
+  color: var(--text);
 }
 
 @keyframes fadeIn {
@@ -44,7 +49,7 @@ body {
 .chart-box:hover,
 .summary-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 32px var(--shadow);
 }
 
 /* Inputs + buttons animations */
@@ -66,7 +71,7 @@ select:focus {
 }
 .add-task-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(139, 92, 246, 0.25);
+  box-shadow: 0 10px 28px var(--shadow);
 }
 
 /* Button for delete */
@@ -75,17 +80,17 @@ select:focus {
 }
 
 .btn-ghost.danger:hover {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(239, 68, 68, 0.12);
     transform: translateY(-2px);
 }
 
 /* Undo Button CSS */
 .btn-ghost.undo {
-    color: var(--accent-2);
+    color: var(--accent_2);
 }
 
 .btn-ghost.undo:hover {
-    background: rgba(6, 182, 212, 0.15);
+    background: var(--glass_2);
 }
 
 /* Ghost button hover */
@@ -93,7 +98,7 @@ select:focus {
   transition: background 0.2s ease, transform 0.2s ease;
 }
 .btn-ghost:hover {
-  background: rgba(0, 0, 0, 0.06);
+  background: var(--glass_2);
   transform: translateY(-2px);
 }
 
@@ -104,7 +109,7 @@ select:focus {
   opacity: 0.6;
   transform: none; /* keep hover subtle if you want */
   filter: grayscale(10%); /* subtle desaturation */
-  background: rgba(255,255,255,0.02); /* slightly different bg */
+  background: var(--glass_2); /* slightly different bg */
 }
 
 /* strike-through for the title */
@@ -154,7 +159,7 @@ select:focus {
   transition: box-shadow 0.25s ease;
 }
 .task-type:hover {
-  box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 12px rgba(0,0,0,0.12);
 }
 
 /* Chart placeholders pulse subtle glow */
@@ -174,9 +179,10 @@ select:focus {
 }
 
 /* Layout wrapper */
-*/ .container {
+.container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 18px;
 }
 
 /* Top navbar */
@@ -188,6 +194,73 @@ select:focus {
   margin-bottom: 20px;
 }
 
+/* Skip link for keyboard users */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus {
+  left: 16px;
+  top: 12px;
+  width: auto;
+  height: auto;
+  background: var(--card);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 6px;
+  z-index: 9999;
+}
+
+/* Hamburger button (mobile) */
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: 0;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.nav-toggle:focus {
+  outline: 2px solid var(--accent);
+  border-radius: 6px;
+}
+.nav-toggle .hamburger {
+  width: 20px;
+  height: 2px;
+  background: var(--text);
+  display: block;
+  position: relative;
+}
+.nav-toggle .hamburger::before,
+.nav-toggle .hamburger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 2px;
+  background: var(--text);
+}
+.nav-toggle .hamburger::before {
+  top: -6px;
+}
+.nav-toggle .hamburger::after {
+  top: 6px;
+}
+
+/* When mobile, hide the regular nav-right and show the toggle */
+@media (max-width: 980px) {
+  .nav-toggle { display: flex; }
+  .nav-right { display: none; }
+  .nav-right[aria-hidden="false"] { display: block; }
+  .nav-right { position: absolute; right: 16px; top: 64px; background: var(--card); padding: 12px; border-radius: 8px; box-shadow: 0 8px 24px var(--shadow); z-index: 1200; }
+}
+
 .brand {
   display: flex;
   gap: 12px;
@@ -197,14 +270,14 @@ select:focus {
 .logo {
   width: 44px;
   height: 44px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--glass);
+  background: linear-gradient(135deg, var(--accent), var(--accent_2));
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: white;
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.15);
+  color: var(--text);
+  box-shadow: 0 6px 20px var(--shadow);
 }
 
 .app-name {
@@ -234,12 +307,12 @@ select:focus {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #84ccff66, #b794f466);
+  background: linear-gradient(135deg, var(--accent), var(--accent_2));
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: #07102a;
+  color: var(--text);
 }
 
 /* Main grid */
@@ -255,7 +328,7 @@ select:focus {
   background: var(--card);
   border-radius: var(--radius);
   padding: 18px;
-  box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+  box-shadow: 0 6px 30px var(--shadow);
 }
 
 .section-title {
@@ -290,7 +363,7 @@ select,
 input[type="date"] {
   background: var(--glass_2);
   color: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
   padding: 10px 12px;
   border-radius: 10px;
   outline: none;
@@ -307,10 +380,10 @@ textarea {
   border-radius: 10px;
   border: 0;
   font-weight: 600;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  color: white;
+  background: linear-gradient(90deg, var(--accent), var(--accent_2));
+  color: var(--text);
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.14);
+  box-shadow: 0 8px 24px var(--shadow);
 }
 
 /* Quick-stats small row */
@@ -321,11 +394,7 @@ textarea {
 }
 .stat-card {
   flex: 1;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.02),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: linear-gradient(180deg, var(--glass), var(--glass_2));
   padding: 12px;
   border-radius: 12px;
 }
@@ -345,7 +414,7 @@ textarea {
     padding: 20px;
     border-radius: 14px;
     margin-top: 18px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+    box-shadow: 0 3px 12px var(--shadow);
 }
 
 .sidebar-info-title {
@@ -359,7 +428,7 @@ textarea {
 .info-item {
     margin-bottom: 16px;
     padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--glass);
     border-radius: 10px;
 }
 
@@ -392,11 +461,7 @@ textarea {
 
 /* Summary / progress card */
 .summary-card {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.02),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: linear-gradient(180deg, var(--glass), var(--glass_2));
   padding: 16px;
   border-radius: 12px;
   display: flex;
@@ -413,7 +478,7 @@ textarea {
 }
 .progress-bar {
   height: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--glass);
   border-radius: 10px;
   margin-top: 8px;
   position: relative;
@@ -422,7 +487,7 @@ textarea {
 .progress-fill {
   height: 100%;
   width: 48%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  background: linear-gradient(90deg, var(--accent), var(--accent_2));
   border-radius: 10px;
 }
 .progress-meta {
@@ -453,7 +518,7 @@ textarea {
 }
 .type-study {
   background: rgba(6, 182, 212, 0.12);
-  color: var(--accent-2);
+  color: var(--accent_2);
 }
 .type-book {
   background: rgba(124, 58, 237, 0.12);
@@ -482,7 +547,7 @@ textarea {
 .btn-ghost {
   padding: 8px 10px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
   background: transparent;
   color: var(--muted);
   cursor: pointer;
@@ -505,7 +570,7 @@ textarea {
 .chart-placeholder {
   flex: 1;
   border-radius: 8px;
-  border: 1px dashed rgba(255, 255, 255, 0.03);
+  border: 1px dashed var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -550,12 +615,125 @@ textarea {
   }
 }
 
+/* Tablet (landscape/portrait) improvements */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .charts {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .task-item {
+    padding: 10px;
+  }
+
+  .task-type {
+    min-width: 48px;
+    padding: 6px 6px;
+    font-size: 11px;
+  }
+
+  .modal-box {
+    width: 420px;
+    max-width: 92vw;
+  }
+
+  .settings-box {
+    width: 92vw;
+    padding: 18px;
+  }
+}
+
+/* Small tablets and large phones */
+@media (max-width: 768px) {
+  .charts {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 10px;
+  }
+
+  .sidebar-info {
+    padding: 12px;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 520px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .task-item {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .task-type {
+    min-width: 44px;
+    padding: 6px 6px;
+    font-size: 11px;
+  }
+
+  .task-meta {
+    font-size: 11px;
+  }
+
+  .charts {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-box {
+    width: 95vw;
+    padding: 16px;
+  }
+
+  .settings-box {
+    width: 96vw;
+    padding: 14px;
+    max-height: 92vh;
+  }
+
+  #resource-modal .modal-box,
+  .modal-box {
+    max-height: 88vh;
+  }
+
+  .task-form .form-row {
+    flex-direction: column;
+  }
+
+  .form-row > * {
+    width: 100%;
+  }
+}
+
 /* CSS for Pop up at our Edit button in task*/
 
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.75); /* darker than background */
+  background: rgba(0,0,0,0.6); /* darker than background */
   display: none;
   justify-content: center;
   align-items: center;
@@ -564,23 +742,23 @@ textarea {
 }
 
 .modal-box {
-  background: rgba(20, 20, 20, 0.95); 
+  background: var(--card);
   padding: 22px;
   border-radius: 16px;
   width: 340px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4);  
+  box-shadow: 0 8px 25px var(--shadow);  
   backdrop-filter: blur(6px);            
 }
 
 
 .modal-box input,
 .modal-box textarea {
-  background: #111;                    
-  border: 1px solid rgba(255,255,255,0.1);
-  color: white;
+  background: var(--glass_2);                    
+  border: 1px solid var(--border);
+  color: var(--text);
   padding: 10px;
   border-radius: 8px;
 }
@@ -601,7 +779,7 @@ textarea {
 .btn-primary {
   padding: 8px 14px;
   background: var(--accent);
-  color: white;
+  color: var(--text);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -669,12 +847,12 @@ textarea {
   width: 520px;
   max-height: 90vh;
   overflow-y: auto;
-  background: rgba(20, 20, 20, 0.95);
+  background: var(--card);
   padding: 24px;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 40px var(--shadow);
   animation: settingsPop 0.32s ease forwards;
-  color: white;
+  color: var(--text);
 }
 
 @keyframes settingsPop {
@@ -717,7 +895,7 @@ textarea {
 
 /* Section Styling */
 .settings-section {
-  background: rgba(255,255,255,0.04);
+  background: var(--glass);
   padding: 16px;
   border-radius: 12px;
 }
@@ -740,9 +918,9 @@ textarea {
   width: 100%;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   background: var(--glass_2);
-  color: white;
+  color: var(--text);
   margin-bottom: 14px;
   font-size: 14px;
 }
@@ -762,7 +940,7 @@ textarea {
   flex: 1;
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
   background: var(--glass);
   color: var(--muted);
   cursor: pointer;
@@ -770,14 +948,15 @@ textarea {
 }
 
 .theme-btn:hover {
-  background: rgba(255,255,255,0.12);
+  background: var(--glass_2);
   transform: translateY(-2px);
 }
 
 .theme-btn.active {
   border-color: var(--accent);
   color: var(--accent);
-  background: rgba(124,58,237,0.15);
+  background: linear-gradient(90deg, var(--accent), var(--accent_2));
+  opacity: 0.12;
 }
 
 /* Save Footer */
@@ -797,6 +976,100 @@ textarea {
   width: 6px;
 }
 .settings-box::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.15);
+  background: var(--glass_2);
   border-radius: 8px;
+}
+
+/* LogOut Button */
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Dropdown layout for our Avatar */
+
+/* User card clickable */
+.user-card {
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Dropdown container */
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: var(--card);
+  border-radius: 12px;
+  min-width: 160px;
+  padding: 8px;
+  box-shadow: 0 12px 30px var(--shadow);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Hide utility */
+.hidden {
+  display: none;
+}
+
+/* Settings button */
+.setting {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  padding: 8px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.setting:hover {
+  background: var(--glass_2);
+}
+
+/* Logout button */
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  padding: 8px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  background: var(--glass_2);
+}
+
+/* Prevent accidental horizontal scroll caused by oversized children */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Allow grid/flex children to shrink below their content width when needed */
+.grid > *,
+.main-area,
+.panel,
+.task-list,
+.charts {
+  min-width: 0;
+}
+
+/* Ensure canvas and images don't overflow their containers */
+img, canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }

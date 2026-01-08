@@ -12,8 +12,9 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
     <div class="container">
-      <nav class="navbar">
+      <nav class="navbar" role="navigation" aria-label="Main navigation">
         <div class="brand">
           <div class="logo">ST</div>
           <div>
@@ -22,21 +23,36 @@
           </div>
         </div>
 
-        <div class="nav-right">
-          <button class="setting">Setting</button>
-          <div class="user-card">
+        <!-- Mobile hamburger toggle -->
+        <button id="navToggle" class="nav-toggle" aria-controls="primaryNav" aria-expanded="false" aria-label="Open main menu">
+          <span class="hamburger" aria-hidden="true"></span>
+        </button>
+
+        <div class="nav-right" id="primaryNav">
+          <div class="user-card" id="userCard">
             <div style="text-align: right; margin-right: 8px">
-              <div id="navbar-username" style="font-weight: 700">Prince</div>
-              <div id="navbar-user-details" style="font-size: 12px; color: var(--muted)">
-                BCA • 2nd Year
+              <div id="navbar-username" style="font-weight: 700">Username</div>
+              <div
+                id="navbar-user-details"
+                style="font-size: 12px; color: var(--muted)"
+              >
+                Course/Class • Year
               </div>
             </div>
-            <div class="avatar">P</div>
+
+            <div class="avatar" id="avatarLetter">-</div>
+
+            <!-- Dropdown -->
+            <div class="user-dropdown hidden" id="userDropdown">
+              <button class="setting">Settings</button>
+              <button class="logout-btn" id="logout-btn">Logout</button>
+            </div>
           </div>
         </div>
       </nav>
 
       <div class="grid">
+        <main id="main">
         <!-- LEFT: Controls / Add Task / Quick Stats -->
         <aside class="panel">
           <div class="section-title">Add / Quick Actions</div>
@@ -103,16 +119,14 @@
 
             <div class="info-item">
               <p class="info-label">Institute</p>
-              <p class="info-value">
-                Institute of Innovation in Technology and Management
-              </p>
+              <p class="info-value">College / School Name</p>
             </div>
 
             <div class="info-item">
               <p class="info-label">Exam</p>
               <p class="info-value">
                 <span class="days-left-exam">XX days left</span>
-                <span class="info-date">(8 Dec 2025)</span>
+                <span class="info-date exam-info-date">Date of Exam</span>
               </p>
             </div>
 
@@ -120,7 +134,9 @@
               <p class="info-label">Semester Ends</p>
               <p class="info-value">
                 <span span class="days-left-sem">XX days left</span>
-                <span class="info-date">(28 Dec 2025)</span>
+                <span class="info-date sem-info-date"
+                  >Date of Semester End</span
+                >
               </p>
             </div>
           </div>
@@ -228,21 +244,21 @@
             </div>
 
             <div class="charts">
-              <!-- TODAY SUMMARY (TEXT ONLY) -->
+              <!-- PIE CHART -->
               <div class="chart-box">
                 <div style="font-weight: 700; margin-bottom: 8px">
                   Today: Completed vs Pending
                 </div>
-                <div class="chart-placeholder">
-                  <div
-                    id="today-progress-box"
-                    style="padding: 20px; color: var(--muted)"
-                  >
-                    Loading today's stats…
+                <div
+                  class="chart-placeholder"
+                  style="display: flex; gap: 16px; align-items: center"
+                >
+                  <!-- DONUT CHART -->
+                  <div style="width: 160px; height: 160px">
+                    <canvas id="todayDonut"></canvas>
                   </div>
                 </div>
               </div>
-
               <!-- LINE CHART -->
               <div class="chart-box">
                 <div style="font-weight: 700; margin-bottom: 8px">
@@ -275,9 +291,8 @@
             </div>
           </section>
 
-          <div class="footer">
-            Made By Prince Gulia A Study Tracker • Prototype
-          </div>
+          <div class="footer">Prince Gulia</div>
+        </main>
         </main>
       </div>
     </div>
@@ -377,15 +392,24 @@
           <section class="settings-section">
             <h3>Backup & Restore</h3>
 
-            <button id="export-data" class="btn-primary" style="width:100%;margin-bottom:10px;">
+            <button
+              id="export-data"
+              class="btn-primary"
+              style="width: 100%; margin-bottom: 10px"
+            >
               Export Backup
             </button>
 
-            <button id="import-data" class="btn-ghost" style="width:100%;">
+            <button id="import-data" class="btn-ghost" style="width: 100%">
               Import Backup
             </button>
 
-            <input type="file" id="import-file-input" accept="application/json" style="display:none;">
+            <input
+              type="file"
+              id="import-file-input"
+              accept="application/json"
+              style="display: none"
+            />
           </section>
         </div>
 
@@ -396,6 +420,5 @@
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!--Added chart.js-->
   <script type="module" src="js/app.js"></script>
 </html>
