@@ -1,36 +1,95 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import helmet from "helmet";
+import compression from "compression";
+import hpp from "hpp";
+import rateLimit from "express-rate-limit";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 
-//Getting My Hidden url for connection
+// Load environment variables
 dotenv.config();
 
-//Connecting my database
+// Connect to database
 connectDB();
 
-// Getting the instance of express
+// Create express app
 const app = express();
 
-//Using cors to allow communication between 2 different Domains
-app.use(cors());
+// Trust proxy if behind a proxy (Heroku/Render/Nginx)
+if (process.env.TRUST_PROXY === "1") {
+  app.set("trust proxy", 1);
+}
 
-//Allowing the backend to read JSON format
-app.use(express.json());
+// CORS configuration with allowlist
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500").split(",").map(o => o.trim());
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow non-browser clients or same-origin
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: false, // set to true only if using cookies across origins
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use(cors(corsOptions));
 
-app.get("/" , (req,res) => {
-    res.send("Backend Is running");
-})
+// Security headers
+app.use(helmet());
 
-// For User Login and register
+// Prevent HTTP parameter pollution
+app.use(hpp());
+
+// Gzip compression
+app.use(compression());
+
+// Body parsers with limits
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
+
+// Basic rate limiter for API
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/api", apiLimiter);
+
+// Health check
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+// Root
+app.get("/", (req, res) => {
+  res.send("Backend is running");
+});
+
+// Routes
 app.use("/api", userRoutes);
-
-// For Tasks CRUD (Create, Read, Update, Delete)
 app.use("/api", taskRoutes);
 
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Not Found" });
+});
+
+// Error handler
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  const message = process.env.NODE_ENV === "production" ? "Server error" : err.message;
+  res.status(status).json({ message });
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT , () => {
-    console.log(`Server is live at : ${PORT}`);
-})
+app.listen(PORT, () => {
+  console.log(`Server is live at : ${PORT}`);
+});

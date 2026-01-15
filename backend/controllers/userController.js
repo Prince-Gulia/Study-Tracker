@@ -20,6 +20,12 @@ export const registerUser = async (req, res) => {
         await newUser.save();
         res.json({ message: "User Registered Successfully" });
     } catch (err) {
+        // Handle Mongo duplicate-key error (e.g., username or email already in use)
+        if (err && err.code === 11000) {
+            const field = err.keyValue ? Object.keys(err.keyValue)[0] : 'field';
+            return res.status(409).json({ message: `${field} already in use` });
+        }
+
         res.status(500).json({ message: err.message });
     }
 };
