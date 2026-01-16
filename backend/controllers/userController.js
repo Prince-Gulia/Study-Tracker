@@ -43,7 +43,7 @@ export const loginUser = async (req, res) => {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
         res.json({
             token,
-            user: { id: user._id, username: user.username, email: user.email, course: user.course, year: user.year, examDate: user.examDate, semEndDate: user.semEndDate, streak: user.streak }
+            user: { id: user._id, username: user.username, email: user.email, course: user.course, year: user.year, institute: user.institute, examDate: user.examDate, semEndDate: user.semEndDate, streak: user.streak }
         });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -65,11 +65,12 @@ export const updateMe = async (req, res) => {
         const user = await User.findById(req.userId);
         if (!user) return res.status(404).json({ message: "User Not Found" });
 
-        const { username, course, year, examDate, semEndDate } = req.body;
+        const { username, course, year, institute, examDate, semEndDate } = req.body;
 
         if (username !== undefined) user.username = username;
         if (course !== undefined) user.course = course;
         if (year !== undefined) user.year = year;
+        if (institute !== undefined) user.institute = institute;
         if (examDate !== undefined) user.examDate = examDate;
         if (semEndDate !== undefined) user.semEndDate = semEndDate;
 

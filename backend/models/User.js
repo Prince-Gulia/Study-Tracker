@@ -30,8 +30,12 @@ const userSchema = new mongoose.Schema({
     semEndDate: {
         type: String,
         required: false
-    }
-    ,streak: {
+    },
+    institute: {
+        type: String,
+        required: false
+    },
+    streak: {
         count: { type: Number, default: 0 },
         lastStreakDay: { type: String, default: null }
     }

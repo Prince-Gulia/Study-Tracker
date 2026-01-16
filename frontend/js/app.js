@@ -65,7 +65,20 @@ async function loadCurrentUser() {
     });
 
     if (!res.ok) return null;
-    return await res.json();
+    const user = await res.json();
+    
+    // Normalize user object to ensure all expected fields exist
+    return {
+      id: user.id || user._id || "",
+      username: user.username || "",
+      email: user.email || "",
+      course: user.course || "",
+      year: user.year || "",
+      institute: user.institute || "",
+      examDate: user.examDate || "",
+      semEndDate: user.semEndDate || "",
+      streak: user.streak || { count: 0, lastStreakDay: null }
+    };
   } catch (err) {
     console.warn("Backend waking up, retrying...");
     return null;
@@ -79,6 +92,9 @@ async function loadCurrentUser() {
  * @param {Object} user
  */
 function renderUser(user) {
+  // Ensure user exists
+  if (!user) return;
+  
   // Navbar username
   const nameEl = document.getElementById("navbar-username");
   if (nameEl) nameEl.textContent = user.username || "Username";
@@ -92,21 +108,35 @@ function renderUser(user) {
   // Navbar user details (course • year)
   const detailsEl = document.getElementById("navbar-user-details");
   if (detailsEl) {
-    detailsEl.textContent = `${user.course || "-"} • ${user.year || "-"}`;
+    const courseText = user.course && user.course.trim() ? user.course : "-";
+    const yearText = user.year && user.year.trim() ? user.year : "-";
+    detailsEl.textContent = `${courseText} • ${yearText}`;
   }
 
-  // Academic info (in sidebar) — prefer course for institute label
+  // Academic info (in sidebar) — prefer institute, fallback to local storage, then course
   const instituteEl = document.querySelector(".sidebar-info .info-item .info-value");
   if (instituteEl) {
     const local = loadData();
-    const inst = user.institute || local.academicInfo.institute || user.course || "Not Mentioned";
+    const inst = (user.institute && user.institute.trim()) 
+      ? user.institute 
+      : (local.academicInfo.institute && local.academicInfo.institute.trim())
+        ? local.academicInfo.institute
+        : (user.course && user.course.trim())
+          ? user.course
+          : "Not Mentioned";
     instituteEl.textContent = inst;
   }
 
   const semDateEl = document.querySelector(".sem-info-date");
-  if (semDateEl && user.semEndDate) semDateEl.textContent = user.semEndDate;
+  if (semDateEl) {
+    const semDate = (user.semEndDate && user.semEndDate.trim()) ? user.semEndDate : "";
+    semDateEl.textContent = semDate || "Not Set";
+  }
   const examDateEl = document.querySelector(".exam-info-date");
-  if (examDateEl && user.examDate) examDateEl.textContent = user.examDate;
+  if (examDateEl) {
+    const examDate = (user.examDate && user.examDate.trim()) ? user.examDate : "";
+    examDateEl.textContent = examDate || "Not Set";
+  }
 }
 
 // Expose render and currentUser reference for other modules (settings)
