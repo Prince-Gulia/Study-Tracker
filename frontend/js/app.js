@@ -30,29 +30,48 @@ if (!token) {
  * Throws if the network request fails with a non-OK response.
  * @returns {Promise<Object|null>}
  */
+// async function loadCurrentUser() {
+//   const token = localStorage.getItem("token");
+
+//   if (!token) return null;
+
+//   const base = (window.ENV && window.ENV.API_BASE_URL)
+//     ? window.ENV.API_BASE_URL.replace(/\/$/, "")
+//     : (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+//       ? "http://localhost:5000/api"
+//       : (location.origin + "/api");
+
+//   const res = await fetch(`${base}/me`, {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
+
+//   if (!res.ok) {
+//     throw new Error("Failed to load user");
+//   }
+
+//   return await res.json();
+// }
 async function loadCurrentUser() {
   const token = localStorage.getItem("token");
-
   if (!token) return null;
 
-  const base = (window.ENV && window.ENV.API_BASE_URL)
-    ? window.ENV.API_BASE_URL.replace(/\/$/, "")
-    : (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-      ? "http://localhost:5000/api"
-      : (location.origin + "/api");
+  try {
+    const res = await fetch(`${API_URL}/api/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const res = await fetch(`${base}/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to load user");
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.warn("Backend waking up, retrying...");
+    return null;
   }
-
-  return await res.json();
 }
+
 
 /**
  * Populate user-related UI elements (navbar, avatar, academic info) using

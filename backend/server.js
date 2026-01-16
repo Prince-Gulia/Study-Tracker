@@ -24,21 +24,29 @@ if (process.env.TRUST_PROXY === "1") {
 }
 
 // CORS configuration with allowlist
-const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500").split(",").map(o => o.trim());
-const corsOptions = {
+const allowedOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map(o => o.trim());
+
+app.use(cors({
   origin: function (origin, callback) {
-    // Allow non-browser clients or same-origin
+    // allow server-to-server, curl, Postman
     if (!origin) return callback(null, true);
+
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    return callback(new Error("Not allowed by CORS"));
+
+    // IMPORTANT: do NOT throw error
+    return callback(null, false);
   },
-  credentials: false, // set to true only if using cookies across origins
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-};
-app.use(cors(corsOptions));
+}));
+
+//  THIS IS CRITICAL
+app.options("*", cors());
+
 
 // Security headers
 app.use(helmet());
