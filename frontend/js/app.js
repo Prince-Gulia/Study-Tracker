@@ -58,7 +58,14 @@ async function loadCurrentUser() {
   if (!token) return null;
 
   try {
-    const res = await fetch(`${API_URL}/api/me`, {
+    // Construct API base URL dynamically (same as settings.js)
+    const base = (window.ENV && window.ENV.API_BASE_URL)
+      ? window.ENV.API_BASE_URL.replace(/\/$/, "")
+      : (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+        ? "http://localhost:5000/api"
+        : (location.origin + "/api");
+
+    const res = await fetch(`${base}/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -80,7 +87,7 @@ async function loadCurrentUser() {
       streak: user.streak || { count: 0, lastStreakDay: null }
     };
   } catch (err) {
-    console.warn("Backend waking up, retrying...");
+    console.warn("Backend waking up, retrying...", err);
     return null;
   }
 }
