@@ -29,7 +29,7 @@ const allowedOrigins = (process.env.CORS_ORIGINS || "")
   .map(o => o.trim());
 
 app.use(cors({
-  origin: function (origin, callback) {
+  origin: function (origin, callback) {git 
     // allow server-to-server, curl, Postman
     if (!origin) return callback(null, true);
 

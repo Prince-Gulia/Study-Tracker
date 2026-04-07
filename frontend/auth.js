@@ -22,10 +22,17 @@ const backendURL = (window.ENV && window.ENV.API_BASE_URL)
  * - On success, redirects to login page
  */
 const signupForm = document.getElementById("signupForm");
+const signupBtn = document.getElementById("signupBtn");
 
 if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        if (signupBtn) {
+            signupBtn.disabled = true;
+            signupBtn.querySelector('.btn-text').style.display = 'none';
+            signupBtn.querySelector('.spinner').style.display = 'inline-flex';
+        }
 
         const username = document.getElementById("username").value;
         const email = document.getElementById("email").value;
@@ -33,19 +40,30 @@ if (signupForm) {
         const course = document.getElementById("course")?.value || "";
         const year = document.getElementById("year")?.value || "";
 
-        const res = await fetch(`${backendURL}/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, email, password, course, year })
-        });
+        try {
+            const res = await fetch(`${backendURL}/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, email, password, course, year })
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (res.ok) {
-            alert("Account Created Successfully");
-            window.location.href = "login.html";
-        } else {
-            alert(data.message);
+            if (res.ok) {
+                alert("Account Created Successfully");
+                window.location.href = "login.html";
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            console.error("Signup error:", error);
+            alert("An error occurred during sign up.");
+        } finally {
+            if (signupBtn) {
+                signupBtn.disabled = false;
+                signupBtn.querySelector('.btn-text').style.display = '';
+                signupBtn.querySelector('.spinner').style.display = 'none';
+            }
         }
     });
 }
@@ -57,29 +75,47 @@ if (signupForm) {
  * - Redirects to main app on success
  */
 const loginForm = document.getElementById("loginForm");
+const loginBtn = document.getElementById("loginBtn");
 
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        if (loginBtn) {
+            loginBtn.disabled = true;
+            loginBtn.querySelector('.btn-text').style.display = 'none';
+            loginBtn.querySelector('.spinner').style.display = 'inline-flex';
+        }
+
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
-        const res = await fetch(`${backendURL}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-        });
+        try {
+            const res = await fetch(`${backendURL}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (res.ok) {
-            localStorage.setItem("token", data.token);
-            // Do not persist full user object in localStorage; token is enough.
-            alert("Login Successful");
-            window.location.href = "index.html";
-        } else {
-            alert(data.message);
+            if (res.ok) {
+                localStorage.setItem("token", data.token);
+                // Do not persist full user object in localStorage; token is enough.
+                alert("Login Successful");
+                window.location.href = "index.html";
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            alert("An error occurred during login.");
+        } finally {
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.querySelector('.btn-text').style.display = '';
+                loginBtn.querySelector('.spinner').style.display = 'none';
+            }
         }
     });
 }

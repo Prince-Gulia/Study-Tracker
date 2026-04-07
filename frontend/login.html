@@ -17,7 +17,12 @@
       <form id="loginForm">
         <input type="email" id="email" placeholder="Email" required />
         <input type="password" id="password" placeholder="Password" required />
-        <button type="submit">Login</button>
+        <button type="submit" id="loginBtn">
+          <span class="btn-text">Login</span>
+          <span class="spinner" style="display: none;">
+            <svg viewBox="0 0 50 50" class="spinner-svg"><circle cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle></svg>
+          </span>
+        </button>
       </form>
       <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
   </div>

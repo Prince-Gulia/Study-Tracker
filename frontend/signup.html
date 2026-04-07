@@ -22,7 +22,12 @@
       <input type="password" id="password" placeholder="Password" required />
       <input type="text" id="course" placeholder="Course (e.g., B.Tech CS)" />
       <input type="text" id="year" placeholder="Year (e.g., 2nd Year)" />
-      <button type="submit">Sign Up</button>
+      <button type="submit" id="signupBtn">
+        <span class="btn-text">Sign Up</span>
+        <span class="spinner" style="display: none;">
+          <svg viewBox="0 0 50 50" class="spinner-svg"><circle cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle></svg>
+        </span>
+      </button>
     </form>
 
     <p>Already have an account? <a href="login.html">Login</a></p>
